@@ -1,0 +1,21 @@
+- name: change web server port and restart httpd
+  hosts: all
+  become: true
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: change Listen port for httpd setting
+      lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^Listen'
+        line: "Listen {{ webport }}"
+      notify:
+        - Restart httpd
+
+  handlers:
+    - name: Restart httpd
+      systemd:
+        name: httpd
+        state: restarted
+        enabled: yes
